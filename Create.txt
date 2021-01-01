@@ -1,0 +1,5 @@
+To create a new site:
+1. Create a new Google Site.
+2. Create a new Google Sheet. This will be where the posts will be stored and retrieved from.
+3. On the main page, place two code blocks, and put the contents of recentPosts.html and topPost.html respectively into both code blocks.
+4. Create multiple sub-pages and put the code of blog.html into each sub-page, and make modifications to parts of the code for each type.
