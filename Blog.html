@@ -1,0 +1,301 @@
+<html>
+	<!--
+	POST FORMAT:
+	Main Header: Date that stores all the posts
+	Post Header: Stores the Post Author and the Date-Header
+	Post Content: Stores the content of the post
+	Breaker: Creates a newline for spacing
+
+	Class Divider (<div>) SAME
+	Post Name and Date (<h3 id=variableA>) DIFFERS FOR EACH POST
+	Button to open and close post (<button>) SAME
+	Post Contents (<p id=variableB>) DIFFERS FOR EACH POST
+	Link to top (<a target>) SAME
+	Breaker (<br>) SAME
+	-->
+
+	<!-- POSTCONTENT ARRAY COMPONENTS
+	[0: Date and Time (Can be .split), 1: Post Author, 2: School, 3: Post Content, 4: Extra Comments]
+	One post = 5 Elements (0-4,5-9,10-14)
+	-->
+	
+	<head>
+		<style>
+			html * {font-family: 'Helvetica'} 
+		</style>
+	</head>
+	
+	<!-- Date Header which stores all posts written on date -->
+	<base target="_parent">
+
+	<script>
+		<!-- Take data from spreadsheet as JSON -->
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false );
+		xmlHttp.send( null );
+		const json = xmlHttp.responseText;
+		const obj  = JSON.parse(json);
+		const data = obj.feed.entry;
+	</script>
+
+	<!-- Styles Stuff, Bootstrap, and Stuff -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+	<!-- Date-Header Creation-->
+	<body>
+		<div id="DateHeader">
+
+		</div>
+	</body>
+	
+	<!-- Script to download from JSON and make into a post -->
+	<script>
+		// JSON to Array to Live HTML
+		let allpostcontents = [];
+		var contentId;
+		for (contentId = 5; contentId < data.length; contentId++){
+			allpostcontents.push(data[contentId].gs$cell.$t);
+		}
+		
+		/*
+		Rancho Bernardo
+		Westview
+		Mount Carmel
+		Poway
+		Del Norte
+		Non-PUSD
+		University
+		*/
+	
+		// Filter all posts in allpostcontents by school
+		let SchoolPostsById = [];
+		// Temporary Variables
+		var postContentsId;
+		for(postContentsId = 2; postContentsId < allpostcontents.length; postContentsId+=5){
+			// If the element at current array pos is equal to the school-->
+			if(allpostcontents[postContentsId] === "Rancho Bernardo"){
+				// Take the index of the blog and store it for access later-->
+				SchoolPostsById.push(postContentsId);
+			}
+		}
+		
+		// Put all of the School Posts regardless of date into an array
+		let AllPostsFromSchool = [];
+		var schoolPostsArrayId;
+		for(schoolPostsArrayId = 0; schoolPostsArrayId < SchoolPostsById.length; schoolPostsArrayId++){
+			var i;
+			for(i = SchoolPostsById[schoolPostsArrayId] - 2; i < SchoolPostsById[schoolPostsArrayId] + 3; i++){
+				AllPostsFromSchool.push(allpostcontents[i]);
+			}
+		}
+		
+		// Creates an array with every date that exists in AllPostsFromSchool
+		let AllPostsFromSchoolDateOnly = [];
+		var schoolPostsDateId;
+		for(schoolPostsDateId = 0; schoolPostsDateId < AllPostsFromSchool.length; schoolPostsDateId += 5){
+			var untouchedDate = AllPostsFromSchool[schoolPostsDateId].split(" ");
+			AllPostsFromSchoolDateOnly.push(untouchedDate[0]);
+		}
+		
+		// Removes duplicates from AllPostsFromSchoolDateOnly
+		let convertToSet = new Set(AllPostsFromSchoolDateOnly);
+		let AllPostsFromSchoolDateOnlyNoDup = Array.from(convertToSet);
+		
+		// Takes this new array and creates date headers accordingly, backwards from last element in array
+		var idz;
+		for(idz = AllPostsFromSchoolDateOnlyNoDup.length - 1; idz > -1; idz--){
+			createDateHeader(idz, AllPostsFromSchoolDateOnlyNoDup[idz]);
+		}
+		
+		/*
+		Create a new date
+			schoolPostsByDate.push(["9/3/2020"]);
+		Add a post to the date
+			schoolPostsByDate[2].push(Time, Author, School, Post, Comments);
+		*/
+		
+		// Categorize posts by date
+		let schoolPostsByDate = [];
+		
+		// Create a new array for every date
+		var k;
+		for(k = 0; k < AllPostsFromSchoolDateOnlyNoDup.length; k++){
+			schoolPostsByDate.push([AllPostsFromSchoolDateOnlyNoDup[k]]);
+		}
+		
+		// Loop through all the elements in row 1 column 0
+		var datesListCounter;
+		for(datesListCounter = 0; datesListCounter < schoolPostsByDate.length; datesListCounter++){
+			// Loop through all elements in row x
+			var elementsInRBPosts;
+			for(elementsInRBPosts = 0; elementsInRBPosts < AllPostsFromSchool.length; elementsInRBPosts+=5){
+				// Split the date to compare
+				var datesplitapart = AllPostsFromSchool[elementsInRBPosts].split(" ");
+				if(datesplitapart[0] === schoolPostsByDate[datesListCounter][0]){
+					// If the dates are the same, put them into the array
+					var i;
+					for(i = 0; i < 5; i++){
+						schoolPostsByDate[datesListCounter].push(AllPostsFromSchool[elementsInRBPosts + i]);
+					}
+				}
+			}
+		}
+		
+		// Loops through all the dates in the array schoolPostsByDate
+		var numberOfPosts = 0;
+		var datesListCounter2;
+		for(datesListCounter2 = 0; datesListCounter2 < schoolPostsByDate.length; datesListCounter2++){
+			// For each day, convert all the posts in that row into the readable format
+			var postsInBigArray;
+			for(postsInBigArray = 1; postsInBigArray < (schoolPostsByDate[datesListCounter2].length - 1); postsInBigArray += 5){
+				// Create a post with post id of number of posts currently, which accordion it goes under, date, post title (name), and content
+				createPost(numberOfPosts, datesListCounter2, schoolPostsByDate[datesListCounter2][postsInBigArray], schoolPostsByDate[datesListCounter2][postsInBigArray + 1], schoolPostsByDate[datesListCounter2][postsInBigArray + 3]);
+				// Increases posts created by one
+				numberOfPosts++;
+			}
+		}
+		
+		/*
+		var currentDates = new Date();
+		var dd = String(currentDates.getDate());
+		var mm = String(currentDates.getMonth() + 1); //January is 0!
+		var yyyy = currentDates.getFullYear();
+		var formatted = mm + "/" + dd + "/" + yyyy;
+		if(currentDates.getHours() > 0 && currentDates.getHours() < 23){
+			if(schoolPostsByDate.includes(formatted) === false){
+				schoolPostsByDate.push([formatted]);
+				createDateHeader(schoolPostsByDate.length, formatted);
+			}
+		}
+		
+		// Create the two main posts
+		createDateHeader(2, "9/4/2020");
+		createDateHeader(1, "9/3/2020");
+		createDateHeader(0, "9/2/2020");
+		*/
+		
+		// FUNCTIONS
+		// THIS FUNCTION CREATES A NEW DATE ACCORDION
+		function createDateHeader(header_id, currentdate) {
+			// <div id="accordionMAJOR0" class="accordion">
+			var part1 = document.createElement("DIV");
+			part1.setAttribute("id", "accordionMAJOR"+header_id.toString());
+			part1.setAttribute("class", "accordion");
+			document.getElementById("DateHeader").appendChild(part1);
+			
+			// <div id="cardMAJOR0" class="card">
+			var part2 = document.createElement("DIV");
+			part2.setAttribute("id", "cardMAJOR"+header_id.toString());
+			part2.setAttribute("class", "card");
+			document.getElementById("accordionMAJOR"+header_id.toString()).appendChild(part2);
+			
+			// <div id="headingMAJOR0" class="card-header">
+			var part3 = document.createElement("DIV");
+			part3.setAttribute("id", "headingMAJOR"+header_id.toString());
+			part3.setAttribute("class", "card-header");
+			document.getElementById("cardMAJOR"+header_id.toString()).appendChild(part3);
+			
+			// <h5 id="buttontextMAJOR0" class="mb-0">
+			var part4 = document.createElement("H5");
+			part4.setAttribute("id", "buttontextMAJOR"+header_id.toString());
+			part4.setAttribute("class", "mb-0");
+			document.getElementById("headingMAJOR"+header_id.toString()).appendChild(part4);
+			
+			// <button class="btn btn-link" data-toggle="collapse" data-target="#collapseMAJOR0" aria-expanded="true" aria-controls="collapseMAJOR0" id="postdateMAJOR0"></button>
+			var part5 = document.createElement("BUTTON");
+			part5.setAttribute("id", "postdata"+header_id.toString());
+			part5.setAttribute("class", "btn btn-link");
+			part5.setAttribute("data-toggle", "collapse");
+			part5.setAttribute("data-target", "#collapseMAJOR"+header_id.toString());
+			part5.setAttribute("aria-expanded", "true");
+			part5.setAttribute("aria-controls", "#collapseMAJOR"+header_id.toString());
+			part5.innerHTML = currentdate+" Posts";
+			document.getElementById("buttontextMAJOR"+header_id.toString()).appendChild(part5);
+			
+			// <div id="collapseMAJOR0" class="collapse" aria-labelledby="headingMAJOR0" data-parent="#accordionMAJOR0">
+			var part3b = document.createElement("DIV");
+			part3b.setAttribute("id", "collapseMAJOR"+header_id.toString());
+			part3b.setAttribute("class", "collapse");
+			part3b.setAttribute("aria-labelledby", "headingMAJOR"+header_id.toString());
+			part3b.setAttribute("data-parent", "#accordionMAJOR"+header_id.toString());
+			document.getElementById("cardMAJOR"+header_id.toString()).appendChild(part3b);
+			
+			// <div id="postsMAJOR0" class="card-body">
+			var part4b = document.createElement("DIV");
+			part4b.setAttribute("id", "postsMAJOR"+header_id.toString());
+			part4b.setAttribute("class", "card-body");
+			document.getElementById("collapseMAJOR"+header_id.toString()).appendChild(part4b);
+		}
+		
+		// THIS FUNCTION CREATES A NEW POST
+		function createPost(postnumber, host, datefull, name, contentsofpost) {
+			// Variables
+			var titledate = document.createTextNode(name + " Post " + datefull);
+			var content = document.createTextNode(contentsofpost);
+			
+			// <div id="accordion1" class="accordion">
+			var part_1 = document.createElement("DIV");
+			part_1.setAttribute("id", "accordion"+postnumber.toString());
+			part_1.setAttribute("class", "accordion");
+			document.getElementById("postsMAJOR"+host.toString()).appendChild(part_1);
+
+			// <div id="card1" class="card">
+			var part_2 = document.createElement("DIV");
+			part_2.setAttribute("id","card"+postnumber.toString());
+			part_2.setAttribute("class", "card");
+			document.getElementById("accordion"+postnumber.toString()).appendChild(part_2);
+
+			// <div id="heading1" class="card-header">
+			var part_3 = document.createElement("DIV");
+			part_3.setAttribute("id", "heading"+postnumber.toString());
+			part_3.setAttribute("class", "card-header");
+			document.getElementById("card"+postnumber.toString()).appendChild(part_3);
+			
+			// <h5 id="buttontext1" class="mb-0">
+			var part_4 = document.createElement("H5");
+			part_4.setAttribute("id", "buttontext"+postnumber.toString());
+			part_4.setAttribute("class", "mb-0");
+			document.getElementById("heading"+postnumber.toString()).appendChild(part_4);
+
+			// <button id="posttitle1" class="btn btn-link" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1"></button>
+			var part_5 = document.createElement("BUTTON");	
+			part_5.appendChild(titledate);
+			part_5.setAttribute("id", "posttitle"+postnumber.toString());
+			part_5.setAttribute("class", "btn btn-link");
+			part_5.setAttribute("data-toggle", "collapse");
+			part_5.setAttribute("data-target", "#collapse"+postnumber.toString());
+			part_5.setAttribute("aria-expanded", "true");
+			part_5.setAttribute("aria-controls", "collapse"+postnumber.toString());
+			document.getElementById("buttontext"+postnumber.toString()).appendChild(part_5);
+
+			// <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordion1">
+			var part_3b = document.createElement("DIV");
+			part_3b.setAttribute("id", "collapse"+postnumber.toString());
+			part_3b.setAttribute("class", "collapse");
+			part_3b.setAttribute("aria-labelledby", "heading"+postnumber.toString());
+			part_3b.setAttribute("data-parent", "#accordion"+postnumber.toString());
+			document.getElementById("card"+postnumber.toString()).appendChild(part_3b);
+
+			// <div id="postbody1" class="card-body"></div>
+			var part_4b = document.createElement("DIV");
+			part_4b.appendChild(content);
+			part_4b.setAttribute("id", "postbody"+postnumber.toString());
+			part_4b.setAttribute("class", "card-body");
+			document.getElementById("collapse"+postnumber.toString()).appendChild(part_4b);
+		}
+		/*
+		// Checks to see if a day has passed, and if so creates a new accordion with the date attached
+		function checkTime(currentDateAndTime) {
+			// At the start of every day, takes date and puts it into the array
+			var formattedcurrentDateAndTime = (currentDateAndTime.getMonth()+"/"+currentDateAndTime.getDate()+"/"+currentDateAndTime.getFullYear()).toString();
+			schoolPostsByDate.push(formattedcurrentDateAndTime);
+			
+			// Using the date it creates a new header with the date
+			var lengths = schoolPostsByDate.length;
+			createDateHeader(lengths, schoolPostsByDate[length]);
+		}*/
+	</script>
+</html>
