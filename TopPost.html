@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<style>
+		html * {font-family: 'Helvetica'} 
+		</style>
+	</head>
+	
+	<!-- Take data from spreadsheet as JSON -->
+	<script>
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false );
+		xmlHttp.send( null );
+		const json = xmlHttp.responseText;
+		const obj  = JSON.parse(json);
+		const data = obj.feed.entry;
+		
+		let postcontents = [];
+		var postno;
+		for (postno = 5; postno < data.length; postno++){
+			postcontents.push(data[postno].gs$cell.$t);
+		}
+	</script>
+	
+	<body>
+		<!-- Post Title-->
+		<h1 style="text-align:center;">POST OF THE DAY</h1>
+
+		<!-- Post Title and Info-->
+		<div class="content" /*style="border:5px solid green; border-style:double;height:400"*/ id="box">
+			<h2 id="name"></h2>
+			<h3 id="date"></h3>
+			<h3 id="school"></h3>
+			<p id="content"></p>
+		</div>
+	</body>
+	
+	<script>
+		var postid = 35; // Change this to change the post of the day, postid = date in postcontents[]
+		var name = postcontents[postid + 1];
+		var date = postcontents[postid];
+		var school = postcontents[postid + 2];
+		var contents = postcontents[postid + 3];
+		
+		// Name
+		var createName = document.createElement("h3");
+		var nameText = document.createTextNode("Author: "+name);
+		createName.appendChild(nameText);
+		var attachToParent = document.getElementById("box");
+		attachToParent.appendChild(createName);
+		
+		// Date and School
+		var createDate = document.createElement("h4");
+		var dateText = document.createTextNode("Date Written: "+ date + " " + school);
+		createDate.appendChild(dateText);
+		var attachToParent = document.getElementById("box");
+		attachToParent.appendChild(createDate);
+
+		// Post Contents
+		var createContent = document.createElement("p");
+		var contentText = document.createTextNode(contents);
+		createContent.appendChild(contentText);
+		var attachToParent = document.getElementById("box");
+		attachToParent.appendChild(createContent);
+	</script>
+</html>
