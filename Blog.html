@@ -29,7 +29,7 @@
 	<base target="_parent">
 
 	<script>
-		<!-- Take data from spreadsheet as JSON -->
+		/* Take data from spreadsheet as JSON */
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.open( "GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false );
 		xmlHttp.send( null );
@@ -59,16 +59,6 @@
 		for (contentId = 5; contentId < data.length; contentId++){
 			allpostcontents.push(data[contentId].gs$cell.$t);
 		}
-		
-		/*
-		Rancho Bernardo
-		Westview
-		Mount Carmel
-		Poway
-		Del Norte
-		Non-PUSD
-		University
-		*/
 	
 		// Filter all posts in allpostcontents by school
 		let SchoolPostsById = [];
@@ -286,16 +276,5 @@
 			part_4b.setAttribute("class", "card-body");
 			document.getElementById("collapse"+postnumber.toString()).appendChild(part_4b);
 		}
-		/*
-		// Checks to see if a day has passed, and if so creates a new accordion with the date attached
-		function checkTime(currentDateAndTime) {
-			// At the start of every day, takes date and puts it into the array
-			var formattedcurrentDateAndTime = (currentDateAndTime.getMonth()+"/"+currentDateAndTime.getDate()+"/"+currentDateAndTime.getFullYear()).toString();
-			schoolPostsByDate.push(formattedcurrentDateAndTime);
-			
-			// Using the date it creates a new header with the date
-			var lengths = schoolPostsByDate.length;
-			createDateHeader(lengths, schoolPostsByDate[length]);
-		}*/
 	</script>
 </html>
