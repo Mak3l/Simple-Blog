@@ -1,7 +1,7 @@
 To create a new blog:
 1. Create a new Google Site.
 2. Create a new Google Sheet. This will be where the posts will be stored and retrieved from.
-3. Using this website (), you will convert the information from the Google Sheet into a JSON format that Javascript can read.
+3. Using this website (https://gist.github.com/terrywbrady/a03b25fe42959b304b1e), you will convert the information from the Google Sheet into a JSON format that Javascript can read.
 4. Create a new Google Forms and link it to Google Sheets. This will be used to send data to the Google Sheet.
 5. On the main page, place two code blocks, and put the contents of recentPosts.html and topPost.html respectively into both code blocks.
 6. Create multiple sub-pages and put the code of blog.html into each sub-page, and make modifications to parts of the code for each type.
