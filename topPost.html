@@ -1,14 +1,15 @@
 <html>
 	<head>
 		<style>
-		html * {font-family: 'Helvetica'} 
+			html * {font-family: 'Helvetica'} 
 		</style>
 	</head>
 	
 	<!-- Take data from spreadsheet as JSON -->
 	<script>
 		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.open( "GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false );
+		// Put the JSON link here
+		xmlHttp.open("GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false);
 		xmlHttp.send( null );
 		const json = xmlHttp.responseText;
 		const obj  = JSON.parse(json);
