@@ -1,107 +1,106 @@
 <html>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+	<head>
+		<style>
+			html * {font-family: 'Helvetica'} 
+		</style>
+	</head>
 
-<head>
-	<style>
-		html * {font-family: 'Helvetica'} 
-	</style>
-</head>
+	<h2 style="text-align:center;">RECENT POSTS</h2>
 
-<h2 style="text-align:center;">RECENT POSTS</h2>
+	<body>
+		<div id="DateHeader">
 
-<body>
-	<div id="DateHeader">
+		</div>
+	</body>
 
-	</div>
-</body>
+	<script>
+		/* Take data from spreadsheet as JSON */
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false );
+		xmlHttp.send( null );
+		const json = xmlHttp.responseText;
+		const obj  = JSON.parse(json);
+		const data = obj.feed.entry;
 
-<script>
-	<!-- Take data from spreadsheet as JSON -->
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open( "GET", "https://spreadsheets.google.com/feeds/cells/13U-JR9AHooz5yohvryD7iser1KoJnbwoE-1_eLupV4Q/1/public/values?alt=json", false );
-	xmlHttp.send( null );
-	const json = xmlHttp.responseText;
-	const obj  = JSON.parse(json);
-	const data = obj.feed.entry;
+		let allpostcontents = [];
+		var contentId;
+		for (contentId = 5; contentId < data.length; contentId++){
+			allpostcontents.push(data[contentId].gs$cell.$t);
+		}
 
-	let allpostcontents = [];
-	var contentId;
-	for (contentId = 5; contentId < data.length; contentId++){
-		allpostcontents.push(data[contentId].gs$cell.$t);
-	}
-	
-	let mostrecentposts = [];
-	var recentId;
-	for(recentId = (allpostcontents.length - 25); recentId < allpostcontents.length; recentId++){
-		mostrecentposts.push(allpostcontents[recentId]);
-	}
-	
-	var recentsIntoPostId;
-	var numberOfPosts = 0;	
-	for(recentsIntoPostId = (mostrecentposts.length - 1); recentsIntoPostId > 0; recentsIntoPostId -= 5){
-		createPost(numberOfPosts, mostrecentposts[recentsIntoPostId - 4], mostrecentposts[recentsIntoPostId - 3], mostrecentposts[recentsIntoPostId - 1]);
-		// Increases posts created by one
-		numberOfPosts++;
-	}
-	
-	function createPost(postnumber, datefull, name, contentsofpost) {
-		// Variables
-		var titledate = document.createTextNode(name + " Post " + datefull);
-		var content = document.createTextNode(contentsofpost);
-		
-		// <div id="accordion1" class="accordion">
-		var part_1 = document.createElement("DIV");
-		part_1.setAttribute("id", "accordion"+postnumber.toString());
-		part_1.setAttribute("class", "accordion");
-		document.getElementById("DateHeader").appendChild(part_1);
+		let mostrecentposts = [];
+		var recentId;
+		for(recentId = (allpostcontents.length - 25); recentId < allpostcontents.length; recentId++){
+			mostrecentposts.push(allpostcontents[recentId]);
+		}
 
-		// <div id="card1" class="card">
-		var part_2 = document.createElement("DIV");
-		part_2.setAttribute("id","card"+postnumber.toString());
-		part_2.setAttribute("class", "card");
-		document.getElementById("accordion"+postnumber.toString()).appendChild(part_2);
+		var recentsIntoPostId;
+		var numberOfPosts = 0;	
+		for(recentsIntoPostId = (mostrecentposts.length - 1); recentsIntoPostId > 0; recentsIntoPostId -= 5){
+			createPost(numberOfPosts, mostrecentposts[recentsIntoPostId - 4], mostrecentposts[recentsIntoPostId - 3], mostrecentposts[recentsIntoPostId - 1]);
+			// Increases posts created by one
+			numberOfPosts++;
+		}
 
-		// <div id="heading1" class="card-header">
-		var part_3 = document.createElement("DIV");
-		part_3.setAttribute("id", "heading"+postnumber.toString());
-		part_3.setAttribute("class", "card-header");
-		document.getElementById("card"+postnumber.toString()).appendChild(part_3);
-		
-		// <h5 id="buttontext1" class="mb-0">
-		var part_4 = document.createElement("H5");
-		part_4.setAttribute("id", "buttontext"+postnumber.toString());
-		part_4.setAttribute("class", "mb-0");
-		document.getElementById("heading"+postnumber.toString()).appendChild(part_4);
+		function createPost(postnumber, datefull, name, contentsofpost) {
+			// Variables
+			var titledate = document.createTextNode(name + " Post " + datefull);
+			var content = document.createTextNode(contentsofpost);
 
-		// <button id="posttitle1" class="btn btn-link" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1"></button>
-		var part_5 = document.createElement("BUTTON");	
-		part_5.appendChild(titledate);
-		part_5.setAttribute("id", "posttitle"+postnumber.toString());
-		part_5.setAttribute("class", "btn btn-link");
-		part_5.setAttribute("data-toggle", "collapse");
-		part_5.setAttribute("data-target", "#collapse"+postnumber.toString());
-		part_5.setAttribute("aria-expanded", "true");
-		part_5.setAttribute("aria-controls", "collapse"+postnumber.toString());
-		document.getElementById("buttontext"+postnumber.toString()).appendChild(part_5);
+			// <div id="accordion1" class="accordion">
+			var part_1 = document.createElement("DIV");
+			part_1.setAttribute("id", "accordion"+postnumber.toString());
+			part_1.setAttribute("class", "accordion");
+			document.getElementById("DateHeader").appendChild(part_1);
 
-		// <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordion1">
-		var part_3b = document.createElement("DIV");
-		part_3b.setAttribute("id", "collapse"+postnumber.toString());
-		part_3b.setAttribute("class", "collapse");
-		part_3b.setAttribute("aria-labelledby", "heading"+postnumber.toString());
-		part_3b.setAttribute("data-parent", "#accordion"+postnumber.toString());
-		document.getElementById("card"+postnumber.toString()).appendChild(part_3b);
+			// <div id="card1" class="card">
+			var part_2 = document.createElement("DIV");
+			part_2.setAttribute("id","card"+postnumber.toString());
+			part_2.setAttribute("class", "card");
+			document.getElementById("accordion"+postnumber.toString()).appendChild(part_2);
 
-		// <div id="postbody1" class="card-body"></div>
-		var part_4b = document.createElement("DIV");
-		part_4b.appendChild(content);
-		part_4b.setAttribute("id", "postbody"+postnumber.toString());
-		part_4b.setAttribute("class", "card-body");
-		document.getElementById("collapse"+postnumber.toString()).appendChild(part_4b);
-	}
-</script>
+			// <div id="heading1" class="card-header">
+			var part_3 = document.createElement("DIV");
+			part_3.setAttribute("id", "heading"+postnumber.toString());
+			part_3.setAttribute("class", "card-header");
+			document.getElementById("card"+postnumber.toString()).appendChild(part_3);
+
+			// <h5 id="buttontext1" class="mb-0">
+			var part_4 = document.createElement("H5");
+			part_4.setAttribute("id", "buttontext"+postnumber.toString());
+			part_4.setAttribute("class", "mb-0");
+			document.getElementById("heading"+postnumber.toString()).appendChild(part_4);
+
+			// <button id="posttitle1" class="btn btn-link" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1"></button>
+			var part_5 = document.createElement("BUTTON");	
+			part_5.appendChild(titledate);
+			part_5.setAttribute("id", "posttitle"+postnumber.toString());
+			part_5.setAttribute("class", "btn btn-link");
+			part_5.setAttribute("data-toggle", "collapse");
+			part_5.setAttribute("data-target", "#collapse"+postnumber.toString());
+			part_5.setAttribute("aria-expanded", "true");
+			part_5.setAttribute("aria-controls", "collapse"+postnumber.toString());
+			document.getElementById("buttontext"+postnumber.toString()).appendChild(part_5);
+
+			// <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#accordion1">
+			var part_3b = document.createElement("DIV");
+			part_3b.setAttribute("id", "collapse"+postnumber.toString());
+			part_3b.setAttribute("class", "collapse");
+			part_3b.setAttribute("aria-labelledby", "heading"+postnumber.toString());
+			part_3b.setAttribute("data-parent", "#accordion"+postnumber.toString());
+			document.getElementById("card"+postnumber.toString()).appendChild(part_3b);
+
+			// <div id="postbody1" class="card-body"></div>
+			var part_4b = document.createElement("DIV");
+			part_4b.appendChild(content);
+			part_4b.setAttribute("id", "postbody"+postnumber.toString());
+			part_4b.setAttribute("class", "card-body");
+			document.getElementById("collapse"+postnumber.toString()).appendChild(part_4b);
+		}
+	</script>
 </html>
