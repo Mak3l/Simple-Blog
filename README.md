@@ -1,4 +1,4 @@
-# SimpleBlog
+# Simple Blog
 
 This is the code for the blog, which can be found live on this site:
 
